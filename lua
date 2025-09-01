@@ -2,13 +2,14 @@
 -- Version: 3.2
 
 -- Instances:
-
+--
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local TextLabel = Instance.new("TextLabel")
+local UtLabel = Instance.new("TextLabel")
 local TextButton = Instance.new("TextButton")
 local TextButton_2 = Instance.new("TextButton")
+local TextButton_3 = Instance.new("TextButton")
+local TextButton_4 = Instance.new("TextButton")
 
 --Properties:
 
@@ -57,9 +58,31 @@ TextButton_2.Text = "spam part"
 TextButton_2.TextColor3 = Color3.fromRGB(0, 0, 0)
 TextButton_2.TextSize = 14.000
 
+TextButton_3.Parent = Frame
+TextButton_3.BackgroundColor3 = Color3.fromRGB(85, 255, 255)
+TextButton_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_3.BorderSizePixel = 0
+TextButton_3.Position = UDim2.new(0.0885608867, 0, 0.550335586, 0)
+TextButton_3.Size = UDim2.new(0, 220, 0, 34)
+TextButton_3.Font = Enum.Font.SourceSans
+TextButton_3.Text = "fly"
+TextButton_3.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_3.TextSize = 14.000
+
+TextButton_4.Parent = ScreenGui
+TextButton_4.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+TextButton_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_4.BorderSizePixel = 0
+TextButton_4.Position = UDim2.new(0.560089946, 0, 0.135608852, 0)
+TextButton_4.Size = UDim2.new(0, 24, 0, 24)
+TextButton_4.Font = Enum.Font.SourceSans
+TextButton_4.Text = "x"
+TextButton_4.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_4.TextSize = 14.000
+
 -- Scripts:
 
-local function VXKQIVF_fake_script() -- TextButton.LocalScript 
+local function JOXDA_fake_script() -- TextButton.LocalScript 
 	local script = Instance.new('LocalScript', TextButton)
 
 	-- Đặt LocalScript bên trong TextButton hoặc ScreenGui
@@ -75,8 +98,8 @@ local function VXKQIVF_fake_script() -- TextButton.LocalScript
 		game:GetService("Debris"):AddItem(msg, 3)
 	end)
 end
-coroutine.wrap(VXKQIVF_fake_script)()
-local function AJYJ_fake_script() -- TextButton_2.LocalScript 
+coroutine.wrap(JOXDA_fake_script)()
+local function ZKXDT_fake_script() -- TextButton_2.LocalScript 
 	local script = Instance.new('LocalScript', TextButton_2)
 
 	local button = script.Parent
@@ -125,4 +148,114 @@ local function AJYJ_fake_script() -- TextButton_2.LocalScript
 	end)
 	
 end
-coroutine.wrap(AJYJ_fake_script)()
+coroutine.wrap(ZKXDT_fake_script)()
+local function XDODZR_fake_script() -- TextButton_3.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_3)
+
+	local button = script.Parent
+	local player = game.Players.LocalPlayer
+	local character = player.Character or player.CharacterAdded:Wait()
+	local hrp = character:WaitForChild("HumanoidRootPart")
+	local flying = false
+	local speed = 50
+	
+	local bodyGyro
+	local bodyVelocity
+	
+	local UserInputService = game:GetService("UserInputService")
+	local camera = workspace.CurrentCamera
+	local moveVector = Vector3.new(0,0,0)
+	
+	-- Cập nhật vận tốc dựa theo hướng camera
+	local function updateVelocity()
+		if bodyVelocity then
+			local camCFrame = camera.CFrame
+			local direction = (camCFrame.LookVector * moveVector.Z + camCFrame.RightVector * moveVector.X)
+			bodyVelocity.Velocity = direction * speed + Vector3.new(0, moveVector.Y * speed, 0)
+		end
+	end
+	
+	-- Nhấn phím
+	UserInputService.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Keyboard then
+			if input.KeyCode == Enum.KeyCode.W then moveVector = Vector3.new(moveVector.X, moveVector.Y, 1) end
+			if input.KeyCode == Enum.KeyCode.S then moveVector = Vector3.new(moveVector.X, moveVector.Y, -1) end
+			if input.KeyCode == Enum.KeyCode.A then moveVector = Vector3.new(-1, moveVector.Y, moveVector.Z) end
+			if input.KeyCode == Enum.KeyCode.D then moveVector = Vector3.new(1, moveVector.Y, moveVector.Z) end
+			if input.KeyCode == Enum.KeyCode.Space then moveVector = Vector3.new(moveVector.X, 1, moveVector.Z) end
+			if input.KeyCode == Enum.KeyCode.LeftShift then moveVector = Vector3.new(moveVector.X, -1, moveVector.Z) end
+		end
+	end)
+	
+	-- Nhả phím
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Keyboard then
+			if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.S then
+				moveVector = Vector3.new(moveVector.X, moveVector.Y, 0)
+			end
+			if input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.D then
+				moveVector = Vector3.new(0, moveVector.Y, moveVector.Z)
+			end
+			if input.KeyCode == Enum.KeyCode.Space or input.KeyCode == Enum.KeyCode.LeftShift then
+				moveVector = Vector3.new(moveVector.X, 0, moveVector.Z)
+			end
+		end
+	end)
+	
+	-- Bật/Tắt bay
+	button.MouseButton1Click:Connect(function()
+		flying = not flying
+	
+		if flying then
+			bodyGyro = Instance.new("BodyGyro")
+			bodyGyro.P = 9e4
+			bodyGyro.MaxTorque = Vector3.new(9e5,9e5,9e5)
+			bodyGyro.CFrame = hrp.CFrame
+			bodyGyro.Parent = hrp
+	
+			bodyVelocity = Instance.new("BodyVelocity")
+			bodyVelocity.MaxForce = Vector3.new(9e5, 9e5, 9e5)
+			bodyVelocity.Velocity = Vector3.new(0,0,0)
+			bodyVelocity.Parent = hrp
+	
+			button.Text = "unfly"
+	
+			-- Loop cập nhật bay
+			spawn(function()
+				while flying and bodyVelocity and bodyGyro do
+					bodyGyro.CFrame = CFrame.new(hrp.Position, hrp.Position + camera.CFrame.LookVector)
+					updateVelocity()
+					wait()
+				end
+			end)
+		else
+			if bodyGyro then bodyGyro:Destroy() end
+			if bodyVelocity then bodyVelocity:Destroy() end
+			button.Text = "fly"
+		end
+	end)
+	
+end
+coroutine.wrap(XDODZR_fake_script)()
+local function GQQLST_fake_script() -- TextButton_4.LocalScript 
+	local script = Instance.new('LocalScript', TextButton_4)
+
+	local button = script.Parent
+	local guiFrame = button.Parent:WaitForChild("Frame") -- Frame muốn bật/tắt
+	local visible = true
+	
+	button.MouseButton1Click:Connect(function()
+		visible = not visible
+		guiFrame.Visible = visible
+	
+		-- Thay đổi text nút tùy trạng thái
+		if visible then
+			button.Text = "Ẩn GUI"
+		else
+			button.Text = "Hiện GUI"
+		end
+	end)
+	
+end
+coroutine.wrap(GQQLST_fake_script)()ICorner = Instance.new("UICorner")
+local Tex
